@@ -7,16 +7,11 @@ import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 
-import javax.servlet.annotation.WebListener;
-import javax.websocket.Session;
-import java.io.IOException;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class calculates the peak hours of the day by counting the number of times a certain day/hour combination was
@@ -25,16 +20,9 @@ import java.util.logging.Logger;
  */
 public class PeakHours extends Calculator implements Serializable
 {
-	Session user;
-
-	public PeakHours(Session user)
-	{
-		this.user = user;
-	}
-
 	// Hash map that will hold the values of the times and dates.
 	static HashMap<String, Integer> dateTimeCount;
-	static boolean                  isStreaming;
+	static boolean isStreaming;
 
 	@Override
 	public void processData(JavaStreamingContext c)
@@ -79,7 +67,6 @@ public class PeakHours extends Calculator implements Serializable
 		@Override
 		public void call(String lineData) throws Exception
 		{
-
 			if (lineData.equals(PeakHours.this.preamble))
 				isStreaming = false;
 			else
@@ -112,17 +99,6 @@ public class PeakHours extends Calculator implements Serializable
 					dateTimeCount.put(result, ++oldValue);
 
 				// Send the result-oldValue pair to websocket.
-				//System.out.println(lineData);
-
-				try
-				{
-					user.getBasicRemote().sendText(result + ' ' + oldValue);
-				}
-				catch (IOException ex)
-				{
-					Logger.getLogger(WebListener.class.getName()).log(Level.SEVERE, null, ex);
-				}
-
 			}
 		}
 	}
