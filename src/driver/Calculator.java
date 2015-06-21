@@ -4,7 +4,8 @@ import org.apache.spark.streaming.api.java.*;
 
 public abstract class Calculator
 {
-	public int SPARK_PORT = 9001;
+	public int SPARK_PORT = 9003;
+
 	public JavaStreamingContext context;
 	public String preamble = "0101";
 

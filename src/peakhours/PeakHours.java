@@ -44,7 +44,7 @@ public class PeakHours extends Calculator implements Serializable
 				// Process each line in the Java RDD collection. Note that the RDD data type is like a collection.
 				stringJavaRDD.foreach(new ProcessLine());
 
-				// If the preamble (0101) was found
+
 				if(!isStreaming)
 					context.stop(true);
 
@@ -67,7 +67,7 @@ public class PeakHours extends Calculator implements Serializable
 		@Override
 		public void call(String lineData) throws Exception
 		{
-			//System.out.println(lineData);
+
 			if (lineData.equals(PeakHours.this.preamble))
 				isStreaming = false;
 			else
@@ -98,6 +98,7 @@ public class PeakHours extends Calculator implements Serializable
 
 				// Send the result-oldValue pair to websocket.
 				System.out.println(lineData);
+
 			}
 		}
 	}
