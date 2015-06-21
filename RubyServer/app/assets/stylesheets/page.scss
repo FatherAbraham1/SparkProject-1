@@ -1,0 +1,96 @@
+// Place all the styles related to the page controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+#main_header
+{
+  	// Used to center contents vertically middle.
+  	display: table;
+	width: 100%;
+
+	min-height: 700px;
+	background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6));
+
+  	div
+	{
+	  	display: table-cell;
+	  	vertical-align: middle;
+	  	h1
+		{
+			font-size: 5em;
+		  	color: white;
+		}
+	}
+}
+
+#about_section
+{
+  	background-color: #ECF0F1;
+  	min-height: 500px;
+
+  	// Used to center contents vertically middle.
+  	display: table;
+  	width: 100%;
+
+  	box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+
+  	div[class=container]
+	{
+	  	display: table-cell;
+	  	vertical-align: middle;
+	  	h4
+		{
+	  		color: #666666;
+		}
+	}
+}
+
+#file_chooser
+{
+  	height: 500px;
+  	background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("paper_coffee.jpg") no-repeat
+				center center;
+	background-size: cover;
+  	box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+
+  	div[class=container]
+	{
+		color: white;
+	  	#drop_zone
+		{
+		  	border: dashed rgba(255, 255, 255, 0.7);
+		  	height: 300px;
+		  	display: table;
+		  	width: 100%;
+
+		  	background-color: rgba(0, 255, 255, 0);
+		  	transition: background-color 0.5s;
+
+		  	h2
+			{
+			  	display: table-cell;
+			  	vertical-align: middle;
+				color: rgba(255, 255, 255, 0.7);
+			  	cursor: pointer;
+			}
+		}
+
+		#drop_zone:hover
+		{
+		  background-color: rgba(255, 255, 255, 0.3);
+		}
+	}
+}
+
+#file_results
+{
+	min-height: 750px;
+  	background-color: #2C3E50;
+  	box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+  	color: white;
+}
+
+.icon_adjust
+{
+	font-size: 12em;
+}

@@ -1,0 +1,348 @@
+<section id="main_header" data-vide-bg="assets/header_vid.mp4"
+         data-vide-options="loop: true, muted: true, position: 50% 50%">
+
+    <div>
+        <h1 class="page-header text-center">RFID Analysis Warehouse</h1>
+
+        <button id="about_button" class="btn-lg btn-primary center-block">
+            <span class="lead">Click here to know more</span>
+        </button>
+    </div>
+
+</section>
+
+<section id="about_section">
+
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-4">
+                <h1 class="text-center icon_adjust"><span class="fa fa-clock-o"></span></h1>
+                <h1 class="text-center"><strong>Peak Times Analysis</strong></h1>
+                <h4 class="text-center">
+                    Our program can calculate the peak traffic hours of the given RFID data set. In our case, the given
+                    data set was that of a conference.
+                </h4>
+            </div>
+
+            <div class="col-md-4">
+                <h1 class="text-center icon_adjust"><span class="fa fa-users"></span></h1>
+                <h1 class="text-center"><strong>Crowd/Swarm Analysis</strong></h1>
+                <h4 class="text-center">
+                    Analyze which areas are the crowdest throughout the day whether it be halls, meeting rooms or the
+                    phone booth.
+                </h4>
+            </div>
+
+            <div class="col-md-4">
+                <h1 class="text-center icon_adjust"><span class="fa fa-microphone"></span></h1>
+                <h1 class="text-center"><strong>Popularity/Ratings Analysis</strong></h1>
+                <h4 class="text-center">
+                    Find out which speech (talk) of the event was the most popular. Remember, good speakers are hard
+                    to come by!
+                </h4>
+            </div>
+
+        </div>
+    </div>
+
+</section>
+
+<section id="file_chooser">
+    <div class="container">
+
+        <h2 class="text-center">Choose file to process</h2>
+
+        <div class="text-center">
+			<form class="form-inline">
+				<select class="form-control" name="statistic_type" id="statistic_type">
+				    <option value="TEST STATISTIC">Choose Statistic</option>
+				    <option value="PeakHours">Peak Hours</option>
+					<option value="CrowdedArea">CrowdedArea</option>
+					<option value="PopularSpeech">Peak Hours</option>
+				</select>
+			    <div class="form-group">
+					<input class="btn btn-primary" type="file"/>
+			    </div>
+			    <input type="button" value="Upload!" class="btn btn-success"/>
+			</form>
+        </div>
+
+        <h2 class="text-center">Or drag a file in the area below ...</h2>
+        <div id="drop_zone">
+            <h2 class="text-center">Drag here!</h2>
+        </div>
+
+    </div>
+</section>
+
+<section id="file_results">
+    <div class="container-fluid">
+        <h1 class="page-header text-center"><span class="fa fa-bar-chart-o"></span> Analysis Results</h1>
+        <div id="chart_results"></div>
+    </div>
+</section>
+
+
+<script type="text/javascript">
+
+    // When the document loads, run the main page logic function.
+    $(document).ready(mainPageLogic);
+
+	function mainPageLogic()
+	{
+		$('#about_button').click(function(){
+			$('html,body').animate({scrollTop: $('#about_section').offset().top},1000);
+		});
+
+//		crowdAnalysis();
+//		peakTimeAnalysis();
+		popularityAnalysis();
+	}
+
+	function peakTimeAnalysis()
+	{
+		var sparkData = [{id:'12/4/2015-2',value:2},{id:'13/4/2015-6',value:10},{id:'14/4/2015-5',value:7},
+			{id:'12/4/2015-3',value:4},{id:'13/4/2015-9',value:8},{id:'14/4/2015-10',value:9}];
+
+
+
+		$('#chart_results').highcharts({
+			chart:
+			{
+				type: 'spline',
+				height: 600,
+				marginTop: 50,
+				marginBottom: 80,
+				events:
+				{
+					load: function () {
+
+						// Get the chart object.
+						var chartObject = this;
+
+						// Update the chart every second. Will be changed to web-socket later.
+						setInterval(function ()
+			            {
+				            // Get the data point from the array.
+				            var dataPoint = sparkData.shift();
+				            if(dataPoint)
+				            {
+					            var id = dataPoint.id;
+					            var value = dataPoint.value;
+
+					            var day = id.split("-")[0];
+					            var hour = id.split("-")[1];
+
+					            // The series is id'ed by the day.
+					            var series = chartObject.get(day);
+
+					            // Series exists
+					            if(series)
+					            {
+						            // Get the point with the same id.
+						            var point = chartObject.get(id);
+
+						            // If point exists then update it. Else add a new point
+						            if(point)
+						            {
+							            // Update the y value of the point to be the new value.
+							            point.update(value);
+						            }
+						            else
+						            {
+							            // Add a new point to the given series.
+							            series.addPoint({x:hour, y:value, id: id})
+						            }
+					            }
+					            else
+					            {
+						            // Create a new series object with the name and id as the day. Add the first point.
+						            series = chartObject.addSeries({
+							            name: day,
+							            id: day,
+							            data: [{x:hour, y:value, id: id}]
+						            });
+					            }
+
+				            }
+
+						}, 1000);
+					}
+				}
+			},
+
+			title: {text: 'Peak Time Analysis'},
+
+			xAxis: {type: 'linear', min: 0, max: 23},
+
+			yAxis:
+			{
+				title: {text: 'Number of People'},
+				plotLines: [{value: 0, width: 1, color: '#808080'}]
+			},
+
+			tooltip: {
+				formatter: function(){
+					return '<b>' + this.series.name + '</b><br/>' + "Hour: " + this.x + ":00 - " + "People: " + this.y;
+				}
+			}
+		});
+	}
+
+    function crowdAnalysis()
+    {
+	    var sparkData = [{id:'Lobby',value:2},{id:'PhoneBooth',value:4},{id:'ConferenceRoom',value:7},
+	                     {id:'Lobby',value:4},{id:'PhoneBooth',value:10},{id:'ConferenceRoom',value:8}];
+
+
+	    $('#chart_results').highcharts({
+		    chart:
+		    {
+			    type: 'column',
+			    height: 600,
+			    marginTop: 50,
+			    marginBottom: 80,
+			    events:
+			    {
+				    load: function ()
+				    {
+					    // Get the chart object.
+					    var chartObject = this;
+
+					    // Update the chart every second. Will be changed to web-socket later.
+					    setInterval(function ()
+		                {
+			                // Get the data point from the array.
+			                var dataPoint = sparkData.shift();
+			                if(dataPoint)
+			                {
+				                var id = dataPoint.id;
+				                var value = dataPoint.value;
+
+				                var series = chartObject.series[0];
+
+				                if(series) {
+					                // Get the point with the same id.
+					                var point = chartObject.get(id);
+
+					                // If point exists then update it. Else add a new point
+					                if (point) {
+						                // Update the y value of the point to be the new value.
+						                point.update(value);
+					                }
+					                else {
+						                // Add a new point to the given series.
+						                series.addPoint({name: id, y: value, id: id})
+					                }
+				                }
+				                else
+				                {
+					                series = chartObject.addSeries({name: 'Locations'});
+				                }
+			                }
+
+		                }, 1000);
+				    }
+			    }
+		    },
+
+		    title: {text: 'Crowd Analysis'},
+
+		    xAxis: {type: 'category'},
+
+		    yAxis:
+		    {
+			    title: {text: 'Number of People'},
+			    plotLines: [{value: 0, width: 1, color: '#808080'}]
+		    },
+
+		    tooltip:
+		    {
+			    formatter: function(){
+				    return '<b>' + this.series.name + '</b><br/>' + "People Count: " + this.y;
+			    }
+		    },
+
+		    series: []
+	    });
+    }
+
+	function popularityAnalysis()
+	{
+		var sparkData = [{id:'BigData',value:2},{id:'Trees',value:4},{id:'Awesomeness',value:7},
+		                 {id:'BigData',value:4},{id:'Trees',value:10},{id:'Awesomeness',value:8}];
+
+		$('#chart_results').highcharts({
+			chart:
+			{
+				type: 'column',
+				height: 600,
+				marginTop: 50,
+				marginBottom: 80,
+				events:
+				{
+					load: function ()
+					{
+						// Get the chart object.
+						var chartObject = this;
+
+						// Update the chart every second. Will be changed to web-socket later.
+						setInterval(function ()
+			            {
+				            // Get the data point from the array.
+				            var dataPoint = sparkData.shift();
+				            if(dataPoint)
+				            {
+					            var id = dataPoint.id;
+					            var value = dataPoint.value;
+
+					            var series = chartObject.series[0];
+
+					            if(series) {
+						            // Get the point with the same id.
+						            var point = chartObject.get(id);
+
+						            // If point exists then update it. Else add a new point
+						            if (point) {
+							            // Update the y value of the point to be the new value.
+							            point.update(value);
+						            }
+						            else {
+							            // Add a new point to the given series.
+							            series.addPoint({name: id, y: value, id: id})
+						            }
+					            }
+					            else
+					            {
+						            series = chartObject.addSeries({name: 'Talks'});
+					            }
+				            }
+
+			            }, 1000);
+					}
+				}
+			},
+
+			title: {text: 'Talk Popularity Analysis'},
+
+			xAxis: {type: 'category'},
+
+			yAxis:
+			{
+				title: {text: 'Number of People'},
+				plotLines: [{value: 0, width: 1, color: '#808080'}]
+			},
+
+			tooltip:
+			{
+				formatter: function(){
+					return '<b>' + this.series.name + '</b><br/>' + "People Count: " + this.y;
+				}
+			},
+
+			series: []
+		});
+	}
+
+</script>

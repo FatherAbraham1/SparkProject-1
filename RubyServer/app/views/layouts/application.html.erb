@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SparkProject</title>
+		<%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
+		<%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+	    <link href='http://fonts.googleapis.com/css?family=Arvo' rel='stylesheet' type='text/css'>
+		<%= csrf_meta_tags %>
+	</head>
+
+	<body>
+		<%= nav_bar fixed: :top, brand: 'Spark RFID Analysis', responsive: true do %>
+
+		<% end %>
+
+		<%= yield %>
+
+	</body>
+</html>
