@@ -29,6 +29,7 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
 import org.apache.commons.codec.binary.*;
+import org.apache.spark.*;
 
 /**
  *
@@ -42,10 +43,25 @@ public class WebListener {
     public static Socket socket;
     public static PrintWriter writer;
     public static OutputStream output1;
+    public static SparkBuffer mySparkBuffer;
+    static {
+        System.out.println("<<<<<<<<<<<<<<<<<<<< just one >>>>>>>>>>>>>>>>>>>>>>>>");
+        try {
+            ServerSocket serverSocket = new ServerSocket(9003);     // Socket that communicates with client's socket
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        mySparkBuffer = new SparkBuffer();      // Object that will send data to the Driver class
+
+
+
+    }
     @OnMessage
     public String onMessage(String message, Session session) {
         System.out.println(">>>>"+message);
         try {
+
                 writer.println(message);        // send the message to the Spark Buffer
                 writer.flush();
             } catch (Exception e) {
@@ -56,6 +72,7 @@ public class WebListener {
     @OnOpen
     public void onOpen (Session peer) {
         peers.add(peer);
+        SparkBuffer.receiveUserObject(peer);
         try {
             socket = new Socket("localhost", 9003);
             output1 = socket.getOutputStream();
@@ -66,7 +83,7 @@ public class WebListener {
         }
         //sendMessage("hello",peer);
     }
-    public void sendMessage(String message, Session session){
+    static public void sendMessage(String message, Session session){
         thisPeer = session;
         try {
             thisPeer.getBasicRemote().sendText(message + peers.size());
@@ -78,7 +95,6 @@ public class WebListener {
     public void onClose (Session peer) {
         peers.remove(peer);
         //System.out.println("bye bye");
-
     }
 }
 

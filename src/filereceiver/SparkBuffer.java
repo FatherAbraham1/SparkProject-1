@@ -9,12 +9,12 @@ import java.net.Socket;
 /**
  * Created by haw on 20/06/15.
  */
+import javax.websocket.Session;
 
 public class SparkBuffer {
 
-
-    public static void main(String []args){
-
+    static Session user;
+    SparkBuffer(){
 
         System.out.println("Starting SparkBuffer");
 
@@ -26,12 +26,10 @@ public class SparkBuffer {
 
 
         try {
-            ServerSocket serverSocket = new ServerSocket(9003);     // Server Socket for the web listener class ( Web Socket)
             ServerSocket serverSocket2 = new ServerSocket(9001);    // Server Socket for the driver class ( Apache Spark Streaming Socket )
 
-
-            Driver myDriver = new Driver(new SparkBuffer());
-            Socket socket = serverSocket.accept();
+            Driver myDriver = new Driver(user);
+            Socket socket = new Socket("localhost", 9003);
 
 //            WebListener myWebListener = new WebListener();
             Socket socket2 = serverSocket2.accept();
@@ -52,6 +50,10 @@ public class SparkBuffer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    static void receiveUserObject(Session user){
+        SparkBuffer.user = user;
     }
 
 }
