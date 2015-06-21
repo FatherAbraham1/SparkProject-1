@@ -25,14 +25,16 @@ import java.util.logging.Logger;
  */
 public class PeakHours extends Calculator implements Serializable
 {
-    Session user;
-    public PeakHours(Session user){
-        this.user = user;
-    }
+	Session user;
+
+	public PeakHours(Session user)
+	{
+		this.user = user;
+	}
 
 	// Hash map that will hold the values of the times and dates.
 	static HashMap<String, Integer> dateTimeCount;
-	static boolean isStreaming;
+	static boolean                  isStreaming;
 
 	@Override
 	public void processData(JavaStreamingContext c)
@@ -55,7 +57,7 @@ public class PeakHours extends Calculator implements Serializable
 				stringJavaRDD.foreach(new ProcessLine());
 
 
-				if(!isStreaming)
+				if (!isStreaming)
 					context.stop(true);
 
 				return null;
@@ -96,26 +98,30 @@ public class PeakHours extends Calculator implements Serializable
 				int hours = date.getHours();
 
 				// This is the value to use to index the hash table.
-				String result = day + "-"+hours;
+				String result = day + "-" + hours;
 				Integer oldValue = dateTimeCount.get(result);
 
 				// It doesn't exist in the hash table, Add it.
-				if (oldValue == null) {
-                    dateTimeCount.put(result, 1);
-                    oldValue =1;
-                }
-					// If it does, then increment the value and add it.
+				if (oldValue == null)
+				{
+					dateTimeCount.put(result, 1);
+					oldValue = 1;
+				}
+				// If it does, then increment the value and add it.
 				else
 					dateTimeCount.put(result, ++oldValue);
 
 				// Send the result-oldValue pair to websocket.
 				//System.out.println(lineData);
 
-                try {
-                    user.getBasicRemote().sendText(result + ' ' + oldValue );
-                } catch (IOException ex) {
-                    Logger.getLogger(WebListener.class.getName()).log(Level.SEVERE, null, ex);
-                }
+				try
+				{
+					user.getBasicRemote().sendText(result + ' ' + oldValue);
+				}
+				catch (IOException ex)
+				{
+					Logger.getLogger(WebListener.class.getName()).log(Level.SEVERE, null, ex);
+				}
 
 			}
 		}

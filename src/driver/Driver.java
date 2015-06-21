@@ -1,9 +1,8 @@
 package driver;
-import filereceiver.SparkBuffer;
 
-import org.apache.spark.*;
+import org.apache.spark.SparkConf;
 import org.apache.spark.streaming.Durations;
-import org.apache.spark.streaming.api.java.*;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import peakhours.PeakHours;
 
 import javax.websocket.Session;
@@ -12,7 +11,7 @@ public class Driver
 {
 	public Driver(Session user)
 	{
-        // master is a Spark, YARN cluster URL, or a special “local[*]” string to run in local mode.
+		// master is a Spark, YARN cluster URL, or a special “local[*]” string to run in local mode.
 		SparkConf conf = new SparkConf().setMaster("local[3]").setAppName("RFID");
 
 

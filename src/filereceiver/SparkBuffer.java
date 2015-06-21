@@ -2,58 +2,58 @@ package filereceiver;
 
 import driver.Driver;
 
+import javax.websocket.Session;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-/**
- * Created by haw on 20/06/15.
- */
-import javax.websocket.Session;
+public class SparkBuffer
+{
+	static Session user;
 
-public class SparkBuffer {
+	SparkBuffer()
+	{
+		System.out.println("Starting SparkBuffer");
 
-    static Session user;
-    SparkBuffer(){
+		DataInputStream dis;
+		PrintStream ps;
+		PrintWriter writer;
+		BufferedReader in;
 
-        System.out.println("Starting SparkBuffer");
+		try
+		{
+			ServerSocket serverSocket2 = new ServerSocket(9001);    // Server Socket for the driver class ( Apache Spark Streaming Socket )
 
+			Driver myDriver = new Driver(user);
+			Socket socket = new Socket("localhost", 9003);
 
-        DataInputStream dis;
-        PrintStream ps;
-        PrintWriter writer;
-        BufferedReader in;
+			Socket socket2 = serverSocket2.accept();
 
+			dis = new DataInputStream(socket.getInputStream());         // Input stream from the web socket
 
-        try {
-            ServerSocket serverSocket2 = new ServerSocket(9001);    // Server Socket for the driver class ( Apache Spark Streaming Socket )
+			writer = new PrintWriter(socket2.getOutputStream());        // Output stream to Spark
 
-            Driver myDriver = new Driver(user);
-            Socket socket = new Socket("localhost", 9003);
+			while (true)
+			{
+				// read each line from the client and send it to spark Driver
+				String str = dis.readLine();
+				if (str.length() > 1)
+				{
+					System.out.println(str);
+					writer.println(str);
+					writer.flush();
+				}
+			}
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
 
-//            WebListener myWebListener = new WebListener();
-            Socket socket2 = serverSocket2.accept();
-
-            dis = new DataInputStream(socket.getInputStream());         // Input stream from the web socket
-
-            writer = new PrintWriter(socket2.getOutputStream());        // Output stream to Spark
-
-            while(true) {
-                // read each line from the client and send it to spark Driver
-                String str = dis.readLine();
-                if(str.length()>1) {
-                    System.out.println(str);
-                    writer.println(str);
-                    writer.flush();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    static void receiveUserObject(Session user){
-        SparkBuffer.user = user;
-    }
+	static void receiveUserObject(Session user)
+	{
+		SparkBuffer.user = user;
+	}
 
 }
