@@ -2,14 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0299859a-9ba3-405c-82ef-915c710315eb" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/RubyServer/config/websocket_server.rb" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/driver/Calculator.java" afterPath="$PROJECT_DIR$/src/driver/Calculator.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/driver/Driver.java" afterPath="$PROJECT_DIR$/src/driver/Driver.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/peakhours/PeakHours.java" afterPath="$PROJECT_DIR$/src/peakhours/PeakHours.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SparkServer.iml" afterPath="$PROJECT_DIR$/SparkServer.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RubyServer/config/application.rb" afterPath="$PROJECT_DIR$/RubyServer/config/application.rb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RubyServer/app/views/page/test.erb" afterPath="$PROJECT_DIR$/RubyServer/app/views/page/test.erb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RubyServer/app/views/page/index.erb" afterPath="$PROJECT_DIR$/RubyServer/app/views/page/index.erb" />
     </list>
     <ignored path="SparkServer.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -35,8 +30,8 @@
       <file leaf-file-name="Driver.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/driver/Driver.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.4315352">
-              <caret line="67" column="9" selection-start-line="67" selection-start-column="9" selection-end-line="67" selection-end-column="9" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -106,8 +101,8 @@
         <option value="$PROJECT_DIR$/src/popularspeech/PopularSpeech.java" />
         <option value="$PROJECT_DIR$/src/crowdedarea/CrowdedArea.java" />
         <option value="$PROJECT_DIR$/src/driver/Calculator.java" />
-        <option value="$PROJECT_DIR$/src/driver/Driver.java" />
         <option value="$PROJECT_DIR$/src/peakhours/PeakHours.java" />
+        <option value="$PROJECT_DIR$/src/driver/Driver.java" />
       </list>
     </option>
   </component>
@@ -937,8 +932,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/driver/Driver.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.4315352">
-          <caret line="67" column="9" selection-start-line="67" selection-start-column="9" selection-end-line="67" selection-end-column="9" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
