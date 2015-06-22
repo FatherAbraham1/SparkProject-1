@@ -27,34 +27,27 @@ module SparkProject
 
           ws.onopen { |websocket|
             puts "WebSocket connection open"
-            @client = TCPSocket.new 'localhost', 9000   # connect to Java Spark Driver to send method name
+            @client = TCPSocket.new 'localhost', 9000             # connect to Java Spark Driver to send method name
 
             Thread.start do
-              @server = TCPServer.new 9003                # listens for spark driver connection to send/receive file data
-              @file_client_input = @server.accept                # This is the socket where the procesed data will come from.
+              @server = TCPServer.new 9003                        # listens for spark driver connection to send/receive file data
+              @file_client_input = @server.accept                 # This is the socket where the procesed data will come from.
               puts "connection open with input spark file stream"
               @file_client_output = @server.accept                # This is the apache spark socket connector.
               puts "connection open with output spark file stream"
-
             end
-
           }
 
           ws.onmessage { |msg|
             puts msg
             if(msg.start_with?('method::') )
               msg.sub!("method::", '')
-
               Thread.start do
                 puts "starting thread"
                 while true
-                  puts "before"
-                  puts @file_client_input.inspect
                   @line = @file_client_input.gets
-                  puts "after"
                   puts @line
                   ws.send(@line)
-
                 end
               end
               @client.puts msg

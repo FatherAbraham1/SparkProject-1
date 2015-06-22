@@ -50,7 +50,6 @@ public class Driver
 
 					// Process the incoming data on the Spark data port.
 					statistic.processData(context);
-					System.out.println("vvvvvvvvvvvvvvvvvvvvvvvvvv$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 				}
 				catch (Exception e)
 				{
