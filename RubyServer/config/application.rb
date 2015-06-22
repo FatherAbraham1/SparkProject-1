@@ -55,7 +55,7 @@ module SparkProject
               @file_client_output.puts msg
             end
 
-            ws.send(msg)
+            #ws.send(msg)
           }
 
           ws.onclose {
