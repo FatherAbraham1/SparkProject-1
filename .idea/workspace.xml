@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0299859a-9ba3-405c-82ef-915c710315eb" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/driver/Driver.java" afterPath="$PROJECT_DIR$/src/driver/Driver.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RubyServer/config/application.rb" afterPath="$PROJECT_DIR$/RubyServer/config/application.rb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RubyServer/app/views/page/index.erb" afterPath="$PROJECT_DIR$/RubyServer/app/views/page/index.erb" />
-    </list>
+    <list default="true" id="0299859a-9ba3-405c-82ef-915c710315eb" name="Default" comment="" />
     <ignored path="SparkServer.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path="$PROJECT_DIR$/out/" />
@@ -30,8 +26,8 @@
       <file leaf-file-name="Driver.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/driver/Driver.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.62240666">
+              <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -932,8 +928,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/driver/Driver.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.62240666">
+          <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
