@@ -38,7 +38,7 @@ public class CrowdedArea extends Calculator implements Serializable
 
 				// If the preamble (010101) was found
 				if(!isStreaming)
-					context.stop(true);
+					context.stop(false,true);
 
 				return null;
 			}
@@ -67,6 +67,20 @@ public class CrowdedArea extends Calculator implements Serializable
 				String[] tokens = lineData.split(",",-1);
 				String areaID = tokens[2];
 				Integer oldValue = areaCount.get(areaID);
+
+				// It doesn't exist in the hash table, Add it.
+				if(oldValue == null)
+				{
+					areaCount.put(areaID,1);
+					oldValue = 1;
+				}
+				else
+					areaCount.put(areaID,++oldValue);
+
+				// Send the result-oldValue pair to client in the following format: areaID##numberOfPeople
+				CrowdedArea.outputFeed.write(areaID + "##" + oldValue);
+				CrowdedArea.outputFeed.newLine();
+				CrowdedArea.outputFeed.flush();
 			}
 		}
 	}

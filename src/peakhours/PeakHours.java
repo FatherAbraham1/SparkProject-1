@@ -22,7 +22,7 @@ public class PeakHours extends Calculator implements Serializable
 {
 	// Hash map that will hold the values of the times and dates.
 	static HashMap<String, Integer> dateTimeCount;
-	static boolean isStreaming;
+	static boolean                  isStreaming;
 
 	@Override
 	public void processData(JavaStreamingContext c)
@@ -44,9 +44,8 @@ public class PeakHours extends Calculator implements Serializable
 				// Process each line in the Java RDD collection. Note that the RDD data type is like a collection.
 				stringJavaRDD.foreach(new ProcessLine());
 
-
 				if (!isStreaming)
-					context.stop(true);
+					context.stop(false,true);
 
 				return null;
 			}
@@ -72,7 +71,8 @@ public class PeakHours extends Calculator implements Serializable
 			else
 			{
 				// Store date time from the input line stream. Line format: SNAPSHOT_TIMESTAMP,TAG_ID,AREA_ID,X,Y,Z
-				String dateTime = lineData.split(",",-1)[0];
+				System.out.println(lineData);
+				String dateTime = lineData.split(",", -1)[0];
 
 				// Split the timestamp into date tokens. Timestamp format: Date Time AM/PM
 				String[] dateTokens = dateTime.split(" ");
@@ -99,7 +99,9 @@ public class PeakHours extends Calculator implements Serializable
 					dateTimeCount.put(result, ++oldValue);
 
 				// Send the result-oldValue pair to client in the following format: day-hours##numberOfPeople
-				outputFeed.write(result + "##" + oldValue);
+				PeakHours.outputFeed.write(result + "##" + oldValue);
+				PeakHours.outputFeed.newLine();
+				PeakHours.outputFeed.flush();
 			}
 		}
 	}

@@ -7,7 +7,7 @@ import java.io.BufferedWriter;
 public abstract class Calculator
 {
 	public int SPARK_PORT = 9003;
-	public BufferedWriter outputFeed;
+	public static BufferedWriter outputFeed;
 
 	public JavaStreamingContext context;
 	public String preamble = "0101";

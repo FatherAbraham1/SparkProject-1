@@ -41,7 +41,7 @@ public class PopularSpeech extends Calculator implements Serializable
 
 				// If the preamble (0101010101) was found
 				if(!isStreaming)
-					context.stop(true);
+					context.stop(false,true);
 
 				return null;
 			}
@@ -87,7 +87,9 @@ public class PopularSpeech extends Calculator implements Serializable
 					talkAttendance.put(talkId,temp.incrementAttendance());
 
 				// Send the talkId-Talk pair to web-socket in the following format: talkId##talkTitle##talkAttendance
-				outputFeed.write(talkId + "##" + temp.talkTitle + "##" + talkAttendance);
+				PopularSpeech.outputFeed.write(talkId + "##" + temp.talkTitle + "##" + talkAttendance);
+				PopularSpeech.outputFeed.newLine();
+				PopularSpeech.outputFeed.flush();
 			}
 		}
 	}
