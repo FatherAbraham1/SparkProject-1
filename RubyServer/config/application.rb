@@ -1,13 +1,54 @@
 require File.expand_path('../boot', __FILE__)
 
-require 'rails/all'
 
+require 'rails/all'
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
 module SparkProject
-  class Application < Rails::Application
+
+  class Client
+    attr_accessor :websocket
+    def initialize(websocket_arg)
+      @websocket = websocket_arg
+    end
+  end
+
+
+  class ChatRoom
+
+    def initialize
+      @clients = []
+      @server = TCPServer.new 9000
+    end
+
+    def start
+      EventMachine.run {
+        EventMachine::WebSocket.start(:host => "0.0.0.0", :port => 8080) do |ws|
+
+          ws.onopen { |websocket|
+            puts "WebSocket connection open"
+            #puts @clients.inspect
+            @client = @server.accept    # Wait for a client to connect
+          }
+
+          ws.onmessage { |msg|
+            puts msg
+            client.puts msg
+            ws.send(msg)
+          }
+
+          ws.onclose {
+            puts "WebSocket connection closed"
+          }
+        end
+      }
+    end
+
+  end
+
+class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
@@ -22,5 +63,12 @@ module SparkProject
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
+
+    config.after_initialize do
+      Thread.start do
+        chatroom = ChatRoom.new
+        chatroom.start
+      end
+    end
   end
 end
