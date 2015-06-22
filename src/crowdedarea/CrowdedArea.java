@@ -36,7 +36,7 @@ public class CrowdedArea extends Calculator implements Serializable
 				// Process each line in the Java RDD collection. Note that the RDD data type is like a collection.
 				stringJavaRDD.foreach(new ProcessLine());
 
-				// If the preamble (0101010101) was found
+				// If the preamble (010101) was found
 				if(!isStreaming)
 					context.stop(true);
 
@@ -64,7 +64,9 @@ public class CrowdedArea extends Calculator implements Serializable
 			else
 			{
 				// SNAPSHOT_TIMESTAMP,TAG_ID,AREA_ID,X,Y,Z
-				String[] tokens = lineData.split(",");
+				String[] tokens = lineData.split(",",-1);
+				String areaID = tokens[2];
+				Integer oldValue = areaCount.get(areaID);
 			}
 		}
 	}

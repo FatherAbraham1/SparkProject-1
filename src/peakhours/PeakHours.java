@@ -72,7 +72,7 @@ public class PeakHours extends Calculator implements Serializable
 			else
 			{
 				// Store date time from the input line stream. Line format: SNAPSHOT_TIMESTAMP,TAG_ID,AREA_ID,X,Y,Z
-				String dateTime = lineData.split(",")[0];
+				String dateTime = lineData.split(",",-1)[0];
 
 				// Split the timestamp into date tokens. Timestamp format: Date Time AM/PM
 				String[] dateTokens = dateTime.split(" ");
@@ -98,7 +98,8 @@ public class PeakHours extends Calculator implements Serializable
 				else
 					dateTimeCount.put(result, ++oldValue);
 
-				// Send the result-oldValue pair to websocket.
+				// Send the result-oldValue pair to client in the following format: day-hours##numberOfPeople
+				outputFeed.write(result + "##" + oldValue);
 			}
 		}
 	}
