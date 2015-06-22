@@ -15,6 +15,7 @@
 
           ws.onmessage = function(msg) {
               document.getElementById("display").innerHTML = msg.data;
+              console.log(msg.data);
           }
       }
 

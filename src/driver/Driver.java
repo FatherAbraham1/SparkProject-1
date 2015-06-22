@@ -7,7 +7,6 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import peakhours.PeakHours;
 import popularspeech.PopularSpeech;
 
-import javax.websocket.Session;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -17,7 +16,7 @@ public class Driver
 	public static void main(String[] args)
 	{
 		// Delay in milliseconds between each message and the other.
-		int delay = 3000;
+		int delay = 500;
 
 		// master is a Spark, YARN cluster URL, or a special “local[*]” string to run in local mode.
 		SparkConf conf = new SparkConf().setMaster("local[3]").setAppName("RFID");
@@ -31,39 +30,45 @@ public class Driver
 			System.out.println("Server Started! Listening to port 9000 ...");
 
 			while (true)
-			{
+					{
 				// Accept the connection from the client.
 				Socket client = rubyConnector.accept();
+
+				// This socket will be used to send the results of the processed spark data.
+				Socket rubyOutputConnector = new Socket("localhost",9003);
+
 				BufferedReader inputFeed = new BufferedReader(new InputStreamReader(client.getInputStream()));
-				BufferedWriter outputFeed = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+				BufferedWriter outputRubyFeed = new BufferedWriter(new OutputStreamWriter(rubyOutputConnector.getOutputStream()));
 
 				String statisticName = inputFeed.readLine();
 				System.out.println("Received: " + statisticName);
-				outputFeed.write("HELLO FROM JAVA DRIVER! :D");
-				outputFeed.close();
 
 				try
 				{
 					// Create a new object using the factory.
-					Calculator statistic = calculatorFactory(statisticName, outputFeed);
+					Calculator statistic = calculatorFactory(statisticName, outputRubyFeed);
 
 					// Process the incoming data on the Spark data port.
 					statistic.processData(context);
+					System.out.println("vvvvvvvvvvvvvvvvvvvvvvvvvv$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 				}
 				catch (Exception e)
 				{
-					System.err.println(e.getMessage());
+					e.printStackTrace();
+
 				}
 
 				// Close the socket and all its streams.
-				inputFeed.close();
-				outputFeed.close();
-				client.close();
+	//			inputFeed.close();
+	//			outputFeed.close();
+	//			client.close();
 			}
 		}
 		catch (IOException e)
 		{
-			System.err.println(e.getMessage());
+			//System.err.println(e.getMessage());
+			e.printStackTrace();
+
 		}
 	}
 
@@ -87,7 +92,7 @@ public class Driver
 			throw new Exception("Statistic not defined!");
 
 		// Attach a reference to the socket where the data should be sent in the object.
-		newObject.outputFeed = out;
+		Calculator.outputFeed = out;
 
 		return newObject;
 	}
