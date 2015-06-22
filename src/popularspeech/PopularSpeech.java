@@ -86,7 +86,8 @@ public class PopularSpeech extends Calculator implements Serializable
 				else
 					talkAttendance.put(talkId,temp.incrementAttendance());
 
-				// Send the talkId-Talk pair to web-socket.
+				// Send the talkId-Talk pair to web-socket in the following format: talkId##talkTitle##talkAttendance
+				outputFeed.write(talkId + "##" + temp.talkTitle + "##" + talkAttendance);
 			}
 		}
 	}
