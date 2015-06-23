@@ -379,7 +379,7 @@
 
         function onMessage(evt) {
             console.log("received: " + evt.data);
-            writeToScreen(evt.data);
+            //writeToScreen(evt.data);
         }
 
         //send text to the server socket
@@ -418,12 +418,11 @@
                 console.log(fileContents);
                 var lines = fileContents.split('\n');
                 for(var line = 0; line < lines.length; line++){
-                    console.log(lines[line]);
-                    sendText(lines[line]);
+                    console.log( line +"  .. "+lines[line]);
+                    //sendText(lines[line]);
                 }
             };
             fr.readAsText( f );
-
         }
 
         // to handle the draging of file over the drop zone div
