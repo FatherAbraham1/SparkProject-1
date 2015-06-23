@@ -64,7 +64,6 @@ module SparkProject
         end
       }
     end
-
   end
 
 class Application < Rails::Application
