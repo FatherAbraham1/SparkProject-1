@@ -24,7 +24,7 @@ public class CrowdedArea extends Calculator implements Serializable
 		isStreaming = true;
 		// Initialize the empty hash map of talk ids and talk objects (talk title and attendance count).
 		areaCount = new HashMap<String, Integer>();
-		// Create a DStream that will connect to hostname:port, like localhost:9001
+		// Create a DStream that will connect to hostname:port, like localhost:9003
 		JavaReceiverInputDStream<String> line = context.socketTextStream("localhost", SPARK_PORT);
 
 		// Processing to occur for each line
@@ -33,20 +33,24 @@ public class CrowdedArea extends Calculator implements Serializable
 			@Override
 			public Void call(JavaRDD<String> stringJavaRDD) throws Exception
 			{
-				// Process each line in the Java RDD collection. Note that the RDD data type is like a collection.
-				stringJavaRDD.foreach(new ProcessLine());
+			// Process each line in the Java RDD collection. Note that the RDD data type is like a collection.
+			stringJavaRDD.foreach(new ProcessLine());
 
-				// If the preamble (010101) was found
-				if(!isStreaming)
-					context.stop(false,true);
-
+			// If the preamble (010101) was found
+			if(!isStreaming)
+			{
+				System.out.println("Close Connection");
+				context.stop(true,true);
 				return null;
+			}
+
+			return null;
 			}
 		});
 
 		// Start executing the streams.
 		context.start();
-		context.awaitTermination();
+//		context.awaitTermination();
 	}
 
 	/**
@@ -78,9 +82,11 @@ public class CrowdedArea extends Calculator implements Serializable
 					areaCount.put(areaID,++oldValue);
 
 				// Send the result-oldValue pair to client in the following format: areaID##numberOfPeople
+				System.out.println(areaID + "##" + oldValue);
 				CrowdedArea.outputFeed.write(areaID + "##" + oldValue);
 				CrowdedArea.outputFeed.newLine();
 				CrowdedArea.outputFeed.flush();
+				Thread.currentThread().sleep(1000);
 			}
 		}
 	}

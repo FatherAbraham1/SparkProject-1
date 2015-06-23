@@ -16,7 +16,7 @@ public class Driver
 	public static void main(String[] args)
 	{
 		// Delay in milliseconds between each message and the other.
-		int delay = 500;
+		int delay = 3000;
 
 		// master is a Spark, YARN cluster URL, or a special “local[*]” string to run in local mode.
 		SparkConf conf = new SparkConf().setMaster("local[3]").setAppName("RFID");
@@ -30,7 +30,7 @@ public class Driver
 			System.out.println("Server Started! Listening to port 9000 ...");
 
 			while (true)
-					{
+			{
 				// Accept the connection from the client.
 				Socket client = rubyConnector.accept();
 
@@ -50,17 +50,12 @@ public class Driver
 
 					// Process the incoming data on the Spark data port.
 					statistic.processData(context);
+					System.out.println("Finished This File");
 				}
 				catch (Exception e)
 				{
 					e.printStackTrace();
-
 				}
-
-				// Close the socket and all its streams.
-	//			inputFeed.close();
-	//			outputFeed.close();
-	//			client.close();
 			}
 		}
 		catch (IOException e)

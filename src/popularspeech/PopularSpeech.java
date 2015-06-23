@@ -36,20 +36,24 @@ public class PopularSpeech extends Calculator implements Serializable
 			@Override
 			public Void call(JavaRDD<String> stringJavaRDD) throws Exception
 			{
-				// Process each line in the Java RDD collection. Note that the RDD data type is like a collection.
-				stringJavaRDD.foreach(new ProcessLine());
+			// Process each line in the Java RDD collection. Note that the RDD data type is like a collection.
+			stringJavaRDD.foreach(new ProcessLine());
 
-				// If the preamble (0101010101) was found
-				if(!isStreaming)
-					context.stop(false,true);
-
+			// If the preamble (0101010101) was found
+			if(!isStreaming)
+			{
+				System.out.println("Close Connection");
+				context.stop(true,true);
 				return null;
+			}
+
+			return null;
 			}
 		});
 
 		// Start executing the streams.
 		context.start();
-		context.awaitTermination();
+//		context.awaitTermination();
 	}
 
 	/**

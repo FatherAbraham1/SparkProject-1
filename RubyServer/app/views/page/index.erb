@@ -56,22 +56,26 @@
         <div class="text-center">
 			<form class="form-inline">
 				<select class="form-control" name="statistic_type" id="statistic_type">
-				    <option value="TEST STATISTIC">Choose Statistic</option>
-				    <option value="PeakHours">Peak Hours</option>
-					<option value="CrowdedArea">CrowdedArea</option>
-					<option value="PopularSpeech">Peak Hours</option>
+				    <option disabled selected value="TEST STATISTIC">Choose Statistic</option>
+				    <option value="peakhours">Peak Hours</option>
+					<option value="crowdedarea">CrowdedArea</option>
+					<option value="popularspeech">Peak Hours</option>
 				</select>
-			    <div class="form-group">
-					<input class="btn btn-primary" type="file" id="files" name="files"/>
-			    </div>
-			    <input type="button" value="Upload!" class="btn btn-success"/>
+			    <span id="file_form" style="display: none;">
+				    <div class="form-group">
+						<input class="btn btn-primary" type="file" id="files" name="files"/>
+				    </div>
+			    </span>
 			</form>
         </div>
 
-        <h2 class="text-center">Or drag a file in the area below ...</h2>
-        <div id="drop_zone">
-            <h2 class="text-center">Drag here!</h2>
+        <div id="file_dragger" style="display: none;">
+	        <h2 class="text-center">Or drag a file in the area below ...</h2>
+	        <div id="drop_zone">
+	            <h2 class="text-center">Drag here!</h2>
+	        </div>
         </div>
+
       <div id="output"></div>
       <output id="list"></output>
     </div>
@@ -87,6 +91,9 @@
 
 <script type="text/javascript">
 
+	var websocket;
+	var chart;
+	var chartUpdateFunction;
     // When the document loads, run the main page logic function.
     $(document).ready(mainPageLogic);
 
@@ -95,82 +102,148 @@
 		$('#about_button').click(function(){
 			$('html,body').animate({scrollTop: $('#about_section').offset().top},1000);
 		});
+		$("#statistic_type").change(function()
+        {
+	        var selectMenu = $("#statistic_type");
+	        var statistic = selectMenu.val();
+			// Create the JavaScript Web Socket
+			websocket = new WebSocket("ws://localhost:8080");
+			// Error socket event function
+			websocket.onerror = function(evt){onError(evt)};
+			// Open socket event function
+			websocket.onopen = function(){onOpen()};
+			// Message received socket event function
+			websocket.onmessage = function(evt){onMessage(evt)};
 
-//		crowdAnalysis();
-//		peakTimeAnalysis();
-		popularityAnalysis();
+	        $("#file_form").fadeIn("1000");
+	        $("#file_dragger").fadeIn("1000");
+	        selectMenu.attr("disabled",true);
+
+			switch (statistic)
+			{
+				case "peakhours":
+					peakTimeAnalysis();
+					chartUpdateFunction = peakTimeChartUpdate;
+					break;
+				case "crowdedarea":
+					crowdAnalysis();
+					chartUpdateFunction = crowdChartUpdate;
+					break;
+				case "popularspeech":
+					popularityAnalysis();
+					break;
+			}
+		});
+	}
+
+	/**
+	 * This function updates the peakTime chart.
+	 **/
+	function peakTimeChartUpdate(data)
+	{
+		// Get the chart object.
+		var chartObject = chart;
+		var dataArray = data.split("##");
+
+		// Get the data point from the array.
+        var dataPoint = {id: dataArray[0], value: dataArray[1]};
+
+        if(dataPoint)
+        {
+            var id = dataPoint.id;
+            var value = Number(dataPoint.value);
+
+
+            var day = id.split("-")[0];
+            var hour = Number(id.split("-")[1]);
+
+	        // The series is id'ed by the day.
+            var series = chartObject.get(day);
+
+            // Series exists
+            if(series)
+            {
+	            // Get the point with the same id.
+	            var point = chartObject.get(id);
+
+	            // If point exists then update it. Else add a new point
+	            if(point)
+	            {
+		            // Update the y value of the point to be the new value.
+		            point.update(value);
+	            }
+	            else
+	            {
+		            // Add a new point to the given series.
+		            series.addPoint({x:hour, y:value, id: id})
+	            }
+            }
+            else
+            {
+	            console.log("New Series");
+	            // Create a new series object with the name and id as the day. Add the first point.
+	            series = chartObject.addSeries({
+		            name: day,
+		            id: day,
+		            data: [{x:hour, y:value, id: id}]
+	            });
+            }
+        }
+	}
+
+	function crowdChartUpdate(data)
+	{
+		var sparkData = [{id:'Lobby',value:2},{id:'PhoneBooth',value:4},{id:'ConferenceRoom',value:7},
+		                 {id:'Lobby',value:4},{id:'PhoneBooth',value:10},{id:'ConferenceRoom',value:8}];
+
+		// Get the chart object.
+		var chartObject = chart;
+		// Format: Area##People
+		var dataArray = data.split("##");
+
+        // Get the data point from the array.
+        var dataPoint = {id: dataArray[0], value: dataArray[1]};
+
+        if(dataPoint)
+        {
+            var id = dataPoint.id;
+            var value = Number(dataPoint.value);
+
+            var series = chartObject.series[0];
+
+            if(series)
+            {
+	            // Get the point with the same id.
+	            var point = chartObject.get(id);
+
+	            // If point exists then update it. Else add a new point
+	            if (point)
+	            {
+		            // Update the y value of the point to be the new value.
+		            point.update(value);
+	            }
+	            else
+	            {
+		            // Add a new point to the given series.
+		            series.addPoint({name: id, y: value, id: id})
+	            }
+            }
+            else
+            {
+	            series = chartObject.addSeries({name: 'Locations'});
+            }
+        }
 	}
 
 	function peakTimeAnalysis()
 	{
-		var sparkData = [{id:'12/4/2015-2',value:2},{id:'13/4/2015-6',value:10},{id:'14/4/2015-5',value:7},
-			{id:'12/4/2015-3',value:4},{id:'13/4/2015-9',value:8},{id:'14/4/2015-10',value:9}];
-
-
-
 		$('#chart_results').highcharts({
 			chart:
 			{
 				type: 'spline',
 				height: 600,
 				marginTop: 50,
-				marginBottom: 80,
-				events:
-				{
-					load: function () {
-
-						// Get the chart object.
-						var chartObject = this;
-
-						// Update the chart every second. Will be changed to web-socket later.
-						setInterval(function ()
-			            {
-				            // Get the data point from the array.
-				            var dataPoint = sparkData.shift();
-				            if(dataPoint)
-				            {
-					            var id = dataPoint.id;
-					            var value = dataPoint.value;
-
-					            var day = id.split("-")[0];
-					            var hour = id.split("-")[1];
-
-					            // The series is id'ed by the day.
-					            var series = chartObject.get(day);
-
-					            // Series exists
-					            if(series)
-					            {
-						            // Get the point with the same id.
-						            var point = chartObject.get(id);
-
-						            // If point exists then update it. Else add a new point
-						            if(point)
-						            {
-							            // Update the y value of the point to be the new value.
-							            point.update(value);
-						            }
-						            else
-						            {
-							            // Add a new point to the given series.
-							            series.addPoint({x:hour, y:value, id: id})
-						            }
-					            }
-					            else
-					            {
-						            // Create a new series object with the name and id as the day. Add the first point.
-						            series = chartObject.addSeries({
-							            name: day,
-							            id: day,
-							            data: [{x:hour, y:value, id: id}]
-						            });
-					            }
-
-				            }
-
-						}, 1000);
-					}
-				}
+				marginBottom: 80
 			},
 
 			title: {text: 'Peak Time Analysis'},
@@ -189,63 +262,19 @@
 				}
 			}
 		});
+
+		chart = $('#chart_results').highcharts();
 	}
 
     function crowdAnalysis()
     {
-	    var sparkData = [{id:'Lobby',value:2},{id:'PhoneBooth',value:4},{id:'ConferenceRoom',value:7},
-	                     {id:'Lobby',value:4},{id:'PhoneBooth',value:10},{id:'ConferenceRoom',value:8}];
-
-
-	    $('#chart_results').highcharts({
+	    chart = $('#chart_results').highcharts({
 		    chart:
 		    {
 			    type: 'column',
 			    height: 600,
 			    marginTop: 50,
-			    marginBottom: 80,
-			    events:
-			    {
-				    load: function ()
-				    {
-					    // Get the chart object.
-					    var chartObject = this;
-
-					    // Update the chart every second. Will be changed to web-socket later.
-					    setInterval(function ()
-		                {
-			                // Get the data point from the array.
-			                var dataPoint = sparkData.shift();
-			                if(dataPoint)
-			                {
-				                var id = dataPoint.id;
-				                var value = dataPoint.value;
-
-				                var series = chartObject.series[0];
-
-				                if(series) {
-					                // Get the point with the same id.
-					                var point = chartObject.get(id);
-
-					                // If point exists then update it. Else add a new point
-					                if (point) {
-						                // Update the y value of the point to be the new value.
-						                point.update(value);
-					                }
-					                else {
-						                // Add a new point to the given series.
-						                series.addPoint({name: id, y: value, id: id})
-					                }
-				                }
-				                else
-				                {
-					                series = chartObject.addSeries({name: 'Locations'});
-				                }
-			                }
-
-		                }, 1000);
-				    }
-			    }
+			    marginBottom: 80
 		    },
 
 		    title: {text: 'Crowd Analysis'},
@@ -267,6 +296,8 @@
 
 		    series: []
 	    });
+
+	    chart = $('#chart_results').highcharts();
     }
 
 	function popularityAnalysis()
@@ -274,7 +305,7 @@
 		var sparkData = [{id:'BigData',value:2},{id:'Trees',value:4},{id:'Awesomeness',value:7},
 		                 {id:'BigData',value:4},{id:'Trees',value:10},{id:'Awesomeness',value:8}];
 
-		$('#chart_results').highcharts({
+		chart = $('#chart_results').highcharts({
 			chart:
 			{
 				type: 'column',
@@ -346,98 +377,94 @@
 		});
 	}
 
-        // Web Socket , File Transfer , Drag & Drop
+    // Web Socket , File Transfer , Drag & Drop
 
-        // Temporary div to show the output
-        var output = document.getElementById("output");
+    // Temporary div to show the output
+    var output = document.getElementById("output");
 
-        // function to write to the output div
-        function writeToScreen(message) {
-            output.innerHTML += message + "<br>";
-        }
+    // function to write to the output div
+    function writeToScreen(message)
+    {
+        output.innerHTML += message + "<br>";
+    }
 
-        // creating the JavaScript Web Socket
+    function onError(evt)
+    {
+        console.error(evt.data);
+    }
 
-        var websocket = new WebSocket("ws://localhost:8080");
+	/**
+	 * This function sends the statistic type to the server on the open of the web socket.
+	 */
+	function onOpen()
+	{
+		console.log("Web socket is open!");
+        sendText("method::"+$("#statistic_type").val());
+    }
 
-        // onerror socket event function
-        websocket.onerror = function(evt) { onError(evt) };
+	/**
+	 * This function is fired when a message is received from the websocket. This message will most probably the data.
+	 * @param evt
+	 */
+    function onMessage(evt)
+	{
+        console.log("Received: " + evt.data);
+		chartUpdateFunction(evt.data);
+    }
 
-        function onError(evt) {
-            writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
-        }
+    // Send text to the server socket
+    function sendText(message)
+    {
+        websocket.send(message);
+    }
 
-        // onopen socket event function
-        websocket.onopen = function(evt) { onOpen(evt) };
+    //////
+    function handleFileSelect(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
 
-        function onOpen() {
-            writeToScreen("Connected");
-            sendText("method::peakhours")
-        }
-        // onmessage socket event function
-        websocket.onmessage = function(evt) { onMessage(evt) };
+        var f;
 
-        function onMessage(evt) {
-            console.log("received: " + evt.data);
-            //writeToScreen(evt.data);
-        }
+        if (evt.type == "drop")
+            f = evt.dataTransfer.files[0]; // FileList object.
+        else
+            f = evt.target.files[0]; // FileList object
 
-        //send text to the server socket
-        function sendText(message) {
-            console.log("sending text: " + message);
-            websocket.send(message);
-        }
+        // files is a FileList of File objects. List some properties.
+        var output = [];
 
-        //////
-        function handleFileSelect(evt) {
-            evt.stopPropagation();
-            evt.preventDefault();
-            var f;
-            if (evt.type == "drop"){
-                f = evt.dataTransfer.files[0]; // FileList object.
-            }else{
-                f = evt.target.files[0]; // FileList object
+        var fr = new FileReader();
+
+        fr.onload = function ()
+        {
+            // 'this' references 'fr', our 'FileReader' instance
+            var fileContents = this.result;
+
+            var lines = fileContents.split('\n');
+
+            for(var line = 0; line < lines.length; line++)
+            {
+                sendText(lines[line]);
             }
 
-            // files is a FileList of File objects. List some properties.
-            var output = [];
+	        sendText("0101");
+        };
 
-            //to list the file proerties to the list div
-            output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-                    f.size, ' bytes, last modified: ',
-                    f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
-                    '</li>');
-            document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+        fr.readAsText( f );
+    }
 
-            var fr = new FileReader();
-            fr.onload = function () {
-                // 'this' references 'fr', our 'FileReader' instance
-                var fileContents = this.result;
+    // To handle the dragging of file over the drop zone div
+    function handleDragOver(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+    }
 
-                // Do someting with 'fileContents'...
-                console.log(fileContents);
-                var lines = fileContents.split('\n');
-                for(var line = 0; line < lines.length; line++){
-                    console.log( line +"  .. "+lines[line]);
-                    //sendText(lines[line]);
-                }
-            };
-            fr.readAsText( f );
-        }
+    // Setup the dnd listeners and the input file listener.
+    var dropZone = document.getElementById('drop_zone');
+    dropZone.addEventListener('dragover', handleDragOver, false);
+    dropZone.addEventListener('drop', handleFileSelect, false);
 
-        // to handle the draging of file over the drop zone div
-        function handleDragOver(evt) {
-            evt.stopPropagation();
-            evt.preventDefault();
-            evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-        }
-
-        // Setup the dnd listeners and the input file listener.
-        var dropZone = document.getElementById('drop_zone');
-        dropZone.addEventListener('dragover', handleDragOver, false);
-        dropZone.addEventListener('drop', handleFileSelect, false);
-
-        document.getElementById('files').addEventListener('change', handleFileSelect, false);
-
+    document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
 </script>
